@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const Setting = require('../models/Setting')
+const UD = require('../models/UD')
 
 /**
  * Seed initial data if it doesn't exist
@@ -40,6 +41,60 @@ const seedInitialData = async () => {
                 console.log('✅ Existing user promoted to SuperUser')
             } else {
                 console.log('ℹ️ SuperUser already exists')
+            }
+        }
+
+        // 3. Seed Initial UDs
+        const initialUDs = [
+            {
+                kode_ud: "UD-UAS-001",
+                nama_ud: "UD. AMANAH SUMBER MAKMUR",
+                alamat: "SELAPARANG KOTA MATARAM",
+                nama_pemilik: "AN. ULUL AZMI",
+                bank: "MANDIRI",
+                no_rekening: "161 00 1613642 1 ",
+                kbli: [],
+                isActive: true
+            },
+            {
+                kode_ud: "UD-UES-001",
+                nama_ud: "UD EMPAT SAUDARA CEMERLANG",
+                alamat: "",
+                nama_pemilik: "AN. AMALKA",
+                bank: "MANDIRI",
+                no_rekening: "161 00 1613646 2",
+                kbli: [],
+                isActive: true
+            },
+            {
+                kode_ud: "UD-BMJ-001",
+                nama_ud: "UD BERKAH MAHABBAH JAYA",
+                alamat: "",
+                nama_pemilik: "AN. FARHAN MUHAMMAD",
+                bank: "MANDIRI",
+                no_rekening: "161 00 1613648 8",
+                kbli: [],
+                isActive: true
+            },
+            {
+                kode_ud: "UD-UBM-001",
+                nama_ud: "UD BANYU MAS",
+                alamat: "SELAPARANG - KOTA MATARAM",
+                nama_pemilik: "",
+                bank: "",
+                no_rekening: "",
+                kbli: [],
+                isActive: true
+            }
+        ]
+
+        for (const udData of initialUDs) {
+            const existingUD = await UD.findOne({ kode_ud: udData.kode_ud })
+            if (!existingUD) {
+                await UD.create(udData)
+                console.log(`✅ UD created: ${udData.nama_ud} (${udData.kode_ud})`)
+            } else {
+                console.log(`ℹ️ UD already exists: ${udData.nama_ud} (${udData.kode_ud})`)
             }
         }
 
