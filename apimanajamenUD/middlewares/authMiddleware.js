@@ -104,14 +104,19 @@ const authorizeRoles = (...roles) => {
 }
 
 /**
- * Admin only middleware
+ * Admin only middleware (includes superuser)
  */
-const adminOnly = authorizeRoles('admin')
+const adminOnly = authorizeRoles('admin', 'superuser')
 
 /**
- * UD Operator access middleware (allows admin and ud_operator)
+ * SuperUser only middleware
  */
-const udOperatorAccess = authorizeRoles('admin', 'ud_operator')
+const superUserOnly = authorizeRoles('superuser')
+
+/**
+ * UD Operator access middleware (allows admin, ud_operator, and superuser)
+ */
+const udOperatorAccess = authorizeRoles('admin', 'ud_operator', 'superuser')
 
 module.exports = {
     generateToken,
@@ -119,5 +124,6 @@ module.exports = {
     authMiddleware,
     authorizeRoles,
     adminOnly,
+    superUserOnly,
     udOperatorAccess
 }

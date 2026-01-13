@@ -5,6 +5,7 @@ const cors = require('cors')
 
 // Import apimanajamenUD
 const { router: apiManajemenUDRouter, errorHandler, notFound } = require('./apimanajamenUD/app')
+const { seedInitialData } = require('./apimanajamenUD/utils/initialSeeder')
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -24,7 +25,11 @@ app.use(errorHandler)
 // Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
-        app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`)
+            // Run initial seeding
+            seedInitialData()
+        })
         // 🧠 Monitoring memory usage (optional)
         setInterval(() => {
             const used = process.memoryUsage();

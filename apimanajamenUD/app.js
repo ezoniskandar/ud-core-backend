@@ -11,6 +11,7 @@ const transaksiRoutes = require('./routes/transaksiRoutes')
 const activityLogRoutes = require('./routes/activityLogRoutes')
 const dashboardRoutes = require('./routes/dashboardRoutes')
 const userRoutes = require('./routes/userRoutes')
+const settingRoutes = require('./routes/settingRoutes')
 
 // Import middleware
 const { errorHandler, notFound } = require('./middlewares/errorHandler')
@@ -25,6 +26,7 @@ router.use('/transaksi', transaksiRoutes)
 router.use('/activity', activityLogRoutes)
 router.use('/dashboard', dashboardRoutes)
 router.use('/user', userRoutes)
+router.use('/setting', settingRoutes)
 
 // Export the router for use in main app
 module.exports = {

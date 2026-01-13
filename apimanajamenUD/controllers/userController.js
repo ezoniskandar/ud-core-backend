@@ -136,12 +136,24 @@ const updateUser = async (req, res) => {
             })
         }
 
-        // Update fields
-        if (username) user.username = username
-        if (email) user.email = email
-        if (password) user.password = password // Will be hashed via pre-save hook
+        // Update fields only if they are provided and not empty
+        if (username && username.trim()) user.username = username.trim()
+        if (email && email.trim()) user.email = email.trim()
+
+        // Only update password if it's a non-empty string
+        if (password && password.trim() !== '') {
+            user.password = password
+        }
+
         if (role) user.role = role
-        if (ud_id !== undefined) user.ud_id = ud_id
+
+        // Handle ud_id: if it's an empty string or null, set to undefined/null
+        if (ud_id === '' || ud_id === null) {
+            user.ud_id = undefined
+        } else if (ud_id) {
+            user.ud_id = ud_id
+        }
+
         if (isActive !== undefined) user.isActive = isActive
 
         await user.save()
@@ -152,6 +164,15 @@ const updateUser = async (req, res) => {
             data: user
         })
     } catch (error) {
+        // Handle duplicate key errors (code 11000)
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0]
+            return res.status(400).json({
+                success: false,
+                message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`
+            })
+        }
+
         res.status(500).json({
             success: false,
             message: 'Failed to update user',

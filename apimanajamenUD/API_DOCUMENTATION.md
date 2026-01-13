@@ -1085,3 +1085,59 @@ DELETE /user/:id
 Authorization: bearer <token>
 Role: admin
 ```
+
+---
+
+### Settings
+Manage global application settings.
+
+#### 1. Get Settings
+```http
+GET /setting
+```
+
+- **Auth Required**: No (Public)
+- **Description**: Fetch all global application settings (e.g., registration status).
+- **Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "651f...",
+    "isRegistrationAllowed": true,
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+}
+```
+
+#### 2. Update Settings
+```http
+PATCH /setting
+Authorization: bearer <token>
+Role: superuser
+```
+
+- **Auth Required**: Yes (SuperUser Only)
+- **Description**: Update application settings.
+- **Request Body**: Can be a boolean or a JSON object.
+  - **Boolean Format**: `true` or `false`
+  - **JSON Format**:
+  ```json
+  {
+    "isRegistrationAllowed": false
+  }
+  ```
+- **Response**:
+```json
+{
+  "success": true,
+  "message": "Settings updated successfully",
+  "data": { ... }
+}
+```
+
+### Authentication Notes
+- **Register**: `POST /auth/register` will return `403 Forbidden` if `isRegistrationAllowed` is set to `false`.
+- **SuperUser Role**: A special role `superuser` has been added. It has the same privileges as `admin` plus the unique ability to manage global settings.
+- **Auto-Seeding**: On backend startup, the system automatically checks for the existence of the superuser account (`suport.udrembiga@gmail.com`) and default settings, creating them if they don't exist.

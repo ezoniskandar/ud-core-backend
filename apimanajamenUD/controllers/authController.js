@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const Setting = require('../models/Setting')
 const { generateToken } = require('../middlewares/authMiddleware')
 const { createActivityLog } = require('../middlewares/activityLogger')
 
@@ -8,6 +9,15 @@ const { createActivityLog } = require('../middlewares/activityLogger')
  */
 const register = async (req, res) => {
     try {
+        // Check if registration is allowed
+        const setting = await Setting.findOne()
+        if (setting && !setting.isRegistrationAllowed) {
+            return res.status(403).json({
+                success: false,
+                message: 'Registration is currently disabled'
+            })
+        }
+
         const { username, email, password, role, ud_id } = req.body
 
         // Check if user already exists
