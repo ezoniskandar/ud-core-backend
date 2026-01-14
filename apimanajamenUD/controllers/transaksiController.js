@@ -134,6 +134,7 @@ const createTransaksi = async (req, res) => {
 
                 const harga_jual = item.harga_jual ?? barang.harga_jual
                 const harga_modal = item.harga_modal ?? barang.harga_modal
+                const satuan = item.satuan ?? barang.satuan
 
                 const { subtotal_jual, subtotal_modal, keuntungan } = calculateProfit(
                     harga_jual,
@@ -144,6 +145,7 @@ const createTransaksi = async (req, res) => {
                 itemsToStore.push({
                     barang_id: barang._id,
                     ud_id: barang.ud_id,
+                    satuan,
                     qty: item.qty,
                     harga_jual,
                     harga_modal,
@@ -224,6 +226,7 @@ const updateTransaksi = async (req, res) => {
 
                 const harga_jual = item.harga_jual ?? barang.harga_jual
                 const harga_modal = item.harga_modal ?? barang.harga_modal
+                const satuan = item.satuan ?? barang.satuan
 
                 const { subtotal_jual, subtotal_modal, keuntungan } = calculateProfit(
                     harga_jual,
@@ -234,6 +237,7 @@ const updateTransaksi = async (req, res) => {
                 itemsToStore.push({
                     barang_id: barang._id,
                     ud_id: barang.ud_id,
+                    satuan,
                     qty: item.qty,
                     harga_jual,
                     harga_modal,

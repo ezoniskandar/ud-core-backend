@@ -52,6 +52,10 @@ const transaksiSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'UDUD'
         },
+        satuan: {
+            type: String,
+            required: true
+        },
         qty: {
             type: Number,
             required: true
