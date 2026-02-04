@@ -370,6 +370,48 @@ const cancelTransaksi = async (req, res) => {
         })
     }
 }
+/**
+ * Hard Delete Transaksi (Permanently delete from DB)
+ * Only for transactions with 'cancelled' status
+ * DELETE /api/v1/transaksi/:id/hard
+ */
+const hardDeleteTransaksi = async (req, res) => {
+    try {
+        const transaksi = await Transaksi.findById(req.params.id)
+        if (!transaksi) {
+            return res.status(404).json({
+                success: false,
+                message: 'Transaksi not found'
+            })
+        }
+
+        if (transaksi.status !== 'cancelled') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only cancelled transactions can be hard deleted'
+            })
+        }
+
+        await Transaksi.findByIdAndDelete(req.params.id)
+
+        res.status(200).json({
+            success: true,
+            message: 'Transaksi permanently deleted successfully'
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to hard delete transaksi',
+            error: error.message
+        })
+    }
+}
+
+const unCompleteTransaksi = async (req, res) => {
+}
+
+const unCancelTransaksi = async (req, res) => {
+}
 
 module.exports = {
     getAllTransaksi,
@@ -377,5 +419,6 @@ module.exports = {
     createTransaksi,
     updateTransaksi,
     completeTransaksi,
-    cancelTransaksi
+    cancelTransaksi,
+    hardDeleteTransaksi
 }
