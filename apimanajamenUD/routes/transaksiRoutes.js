@@ -7,7 +7,9 @@ const {
     updateTransaksi,
     completeTransaksi,
     cancelTransaksi,
-    hardDeleteTransaksi
+    hardDeleteTransaksi,
+    unCompleteTransaksi,
+    unCancelTransaksi
 } = require('../controllers/transaksiController')
 const { authMiddleware } = require('../middlewares/authMiddleware')
 const { logActivity } = require('../middlewares/activityLogger')
@@ -30,8 +32,14 @@ router.put('/:id', logActivity('UPDATE', 'TRANSAKSI'), updateTransaksi)
 // POST /api/v1/transaksi/:id/complete - Complete transaksi
 router.post('/:id/complete', logActivity('UPDATE', 'TRANSAKSI'), completeTransaksi)
 
+// POST /api/v1/transaksi/:id/uncomplete - Uncomplete transaksi
+router.post('/:id/uncomplete', logActivity('UPDATE', 'TRANSAKSI'), unCompleteTransaksi)
+
 // DELETE /api/v1/transaksi/:id - Cancel transaksi
 router.delete('/:id', logActivity('DELETE', 'TRANSAKSI'), cancelTransaksi)
+
+// POST /api/v1/transaksi/:id/uncancel - Uncancel transaksi
+router.post('/:id/uncancel', logActivity('UPDATE', 'TRANSAKSI'), unCancelTransaksi)
 
 // DELETE /api/v1/transaksi/:id/hard - Hard delete transaksi
 router.delete('/:id/hard', logActivity('DELETE', 'TRANSAKSI'), hardDeleteTransaksi)

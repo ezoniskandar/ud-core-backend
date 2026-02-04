@@ -407,10 +407,80 @@ const hardDeleteTransaksi = async (req, res) => {
     }
 }
 
+/**
+ * Uncomplete Transaksi (Revert status from completed to draft)
+ * POST /api/v1/transaksi/:id/uncomplete
+ */
 const unCompleteTransaksi = async (req, res) => {
+    try {
+        const transaksi = await Transaksi.findById(req.params.id)
+        if (!transaksi) {
+            return res.status(404).json({
+                success: false,
+                message: 'Transaksi not found'
+            })
+        }
+
+        if (transaksi.status !== 'completed') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only completed transactions can be uncompleted'
+            })
+        }
+
+        transaksi.status = 'draft'
+        await transaksi.save()
+
+        res.status(200).json({
+            success: true,
+            message: 'Transaksi reverted to draft successfully',
+            data: transaksi
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to uncomplete transaksi',
+            error: error.message
+        })
+    }
 }
 
+/**
+ * Uncancel Transaksi (Revert status from cancelled to draft)
+ * POST /api/v1/transaksi/:id/uncancel
+ */
 const unCancelTransaksi = async (req, res) => {
+    try {
+        const transaksi = await Transaksi.findById(req.params.id)
+        if (!transaksi) {
+            return res.status(404).json({
+                success: false,
+                message: 'Transaksi not found'
+            })
+        }
+
+        if (transaksi.status !== 'cancelled') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only cancelled transactions can be uncancelled'
+            })
+        }
+
+        transaksi.status = 'draft'
+        await transaksi.save()
+
+        res.status(200).json({
+            success: true,
+            message: 'Transaksi reverted to draft successfully',
+            data: transaksi
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to uncancel transaksi',
+            error: error.message
+        })
+    }
 }
 
 module.exports = {
@@ -420,5 +490,7 @@ module.exports = {
     updateTransaksi,
     completeTransaksi,
     cancelTransaksi,
-    hardDeleteTransaksi
+    hardDeleteTransaksi,
+    unCompleteTransaksi,
+    unCancelTransaksi
 }
