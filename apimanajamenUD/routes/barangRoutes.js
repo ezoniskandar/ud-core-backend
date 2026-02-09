@@ -6,12 +6,16 @@ const {
     getBarangById,
     createBarang,
     updateBarang,
-    deleteBarang
+    deleteBarang,
+    getAllBarangPublik
 } = require('../controllers/barangController')
 const { authMiddleware } = require('../middlewares/authMiddleware')
 const { logActivity } = require('../middlewares/activityLogger')
 
-// All routes require authentication
+// GET /api/v1/barang/publik - List all barang (Kitchen/Public - Verified by code)
+router.get('/publik', getAllBarangPublik)
+
+// All routes below require authentication
 router.use(authMiddleware)
 
 // GET /api/v1/barang - List all barang

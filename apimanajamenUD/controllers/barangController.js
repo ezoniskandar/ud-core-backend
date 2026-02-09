@@ -1,4 +1,5 @@
 const Barang = require('../models/Barang')
+const Dapur = require('../models/Dapur')
 const { paginate, paginationResponse, sanitizeSearch } = require('../utils/helpers')
 
 /**
@@ -222,11 +223,72 @@ const deleteBarang = async (req, res) => {
     }
 }
 
+/**
+ * Get all Barang for Kitchen/Public (verified by kode_dapur)
+ * GET /api/v1/barang/publik
+ */
+const getAllBarangPublik = async (req, res) => {
+    try {
+        const { page, limit, skip } = paginate(req.query.page, req.query.limit)
+        const { search, ud_id } = req.query
+        const kode_dapur = req.query.kode_dapur || req.headers['x-kitchen-code']
+
+        if (!kode_dapur) {
+            return res.status(401).json({
+                success: false,
+                message: 'Kode dapur is required (via query or x-kitchen-code header)'
+            })
+        }
+
+        // Verify kitchen code
+        const dapur = await Dapur.findOne({ kode_dapur, isActive: true })
+        if (!dapur) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid or inactive kitchen code'
+            })
+        }
+
+        // Build query
+        const query = { isActive: true }
+        if (ud_id) query.ud_id = ud_id
+        if (search) {
+            query.nama_barang = { $regex: sanitizeSearch(search), $options: 'i' }
+        }
+
+        const [data, totalDocs] = await Promise.all([
+            Barang.find(query)
+                .populate('ud_id', 'kode_ud nama_ud')
+                .sort({ nama_barang: 1 }) // Sorted by name for kitchen
+                .skip(skip)
+                .limit(limit)
+                .select('-harga_modal -harga_jual'), // Hide sensitive pricing
+            Barang.countDocuments(query)
+        ])
+
+        res.status(200).json({
+            success: true,
+            dapur: {
+                nama_dapur: dapur.nama_dapur,
+                kode_dapur: dapur.kode_dapur
+            },
+            ...paginationResponse(data, totalDocs, page, limit)
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch public/kitchen barang list',
+            error: error.message
+        })
+    }
+}
+
 module.exports = {
     getAllBarang,
     searchBarang,
     getBarangById,
     createBarang,
     updateBarang,
-    deleteBarang
+    deleteBarang,
+    getAllBarangPublik
 }
