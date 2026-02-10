@@ -262,7 +262,7 @@ const getAllBarangPublik = async (req, res) => {
                 .sort({ nama_barang: 1 }) // Sorted by name for kitchen
                 .skip(skip)
                 .limit(limit)
-                .select('-harga_modal -harga_jual'), // Hide sensitive pricing
+                .select('-harga_modal'), // Hide sensitive pricing (modal), but show selling price (jual)
             Barang.countDocuments(query)
         ])
 
